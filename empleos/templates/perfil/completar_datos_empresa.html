@@ -1,0 +1,69 @@
+{% load widget_tweaks %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Completar Datos Empresa</title>
+</head>
+<body>
+    <section class="vh-100 gradient-custom">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-lg-8"> 
+                    <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                        <div class="card-body p-5">
+                            <h2 class="fw-bold mb-4 text-center">Completar Datos de Empresa</h2>
+
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <div class="form-outline form-white">
+                                            {{ form.nombre_empresa|add_class:"form-control form-control-lg" }}
+                                            <label class="form-label">Nombre de la Empresa</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+                                        <div class="form-outline form-white">
+                                            {{ form.ubicacion|add_class:"form-control form-control-lg" }}
+                                            <label class="form-label">Ubicación</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-outline form-white mb-4">
+                                    {{ form.descripcion|add_class:"form-control form-control-md" }}
+                                    <label class="form-label">Descripción</label>
+                                </div>
+
+                                <div class="mb-4 text-start">
+                                    <label class="form-label text-white fw-bold">Adecuaciones Disponibles</label>
+                                    <p class="text-white-50 mb-2" style="font-size: 0.9rem;">
+                                        Selecciona cuál de las siguientes adecuaciones está presente en tu empresa. 
+                                        Esto ayudará a las personas que necesitan alguna adaptación específica para saber si el lugar es apto para desempeñar sus labores.
+                                    </p>
+                                    <div class="form-check form-check-inline text-white">
+                                        {{ form.adecuaciones }}
+                                    </div>
+                                </div>
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-outline-light btn-lg px-5">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+</body>
+</html>

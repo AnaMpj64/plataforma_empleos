@@ -1,0 +1,42 @@
+.gradient-custom {
+    background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+}
+
+.card-custom {
+    background-color: #333;
+    border-radius: 1rem; 
+}
+
+.panel-interactivo {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    border-radius: 1rem;
+    padding: 30px;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.panel-interactivo:hover {
+    transform: scale(1.05);
+}
+
+.icono-grande {
+    font-size: 3rem;
+    color: #f8f9fa;
+}
+
+.btn-edit-foto {
+    cursor: pointer;
+    color: white;
+}
+
+.form-control-hidden {
+    display: none;
+}
+
+img.rounded-circle {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}

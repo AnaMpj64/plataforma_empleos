@@ -1,0 +1,84 @@
+{% load widget_tweaks %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Registrarse</title>
+</head>
+<body>
+    <section class="vh-100 gradient-custom">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                        <div class="card-body p-5 text-center">
+
+                            <div class="mb-md-5 mt-md-4 pb-5">
+
+                                <h2 class="fw-bold mb-2 text-uppercase">Crear cuenta</h2>
+                                <p class="text-white-50 mb-5">Complete los datos para registrarse</p>
+
+                                <form method="post" action="{% url 'account_signup' %}">
+                                    {% csrf_token %}
+                                    
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.username|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">Nombre de usuario</label>
+                                        {% if form.username.errors %}
+                                            <div class="text-danger small">{{ form.username.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.email|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">Correo</label>
+                                        {% if form.email.errors %}
+                                            <div class="text-danger small">{{ form.email.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.password1|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">Contraseña</label>
+                                        {% if form.password1.errors %}
+                                            <div class="text-danger small">{{ form.password1.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.password2|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">Repetir contraseña</label>
+                                        {% if form.password2.errors %}
+                                            <div class="text-danger small">{{ form.password2.errors|join:", " }}</div>
+                                        {% endif %}
+                                    </div>
+                                
+                                    {% if form.non_field_errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ form.non_field_errors }}
+                                        </div>
+                                    {% endif %}
+                                
+                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit">Registrarse</button>
+                                </form>
+
+                            </div>
+
+                            <div>
+                                <p class="mb-0">¿Ya tienes una cuenta? <a href="{% url 'account_login' %}" class="text-white-50 fw-bold">Iniciar sesión</a></p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+</body>
+</html>

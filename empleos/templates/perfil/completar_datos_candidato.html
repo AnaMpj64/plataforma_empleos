@@ -1,0 +1,65 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Completar Datos Candidato</title>
+</head>
+<body>
+    <h1>Aquí se mostrará el formulario para datos de candidato (aún en desarrollo)</h1>
+   <!--  <section class="vh-100 gradient-custom">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                        <div class="card-body p-5 text-center">
+
+                            <div class="mb-md-5 mt-md-4 pb-5">
+                                <h2 class="fw-bold mb-2 text-uppercase">Completar Datos Candidato</h2>
+                                <p class="text-white-50 mb-5">Por favor completa los datos específicos como candidato</p>
+
+                                <form method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.portafolio_url|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">URL del Portafolio</label>
+                                    </div>
+
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.nivel_estudios|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">Nivel de Estudios</label>
+                                    </div>
+
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.habilidades_tecnicas|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">Habilidades Técnicas</label>
+                                    </div>
+
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.habilidades_blandas|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">Habilidades Blandas</label>
+                                    </div>
+
+                                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        {{ form.idiomas|add_class:"form-control form-control-lg" }}
+                                        <label class="form-label">Idiomas</label>
+                                    </div>
+
+                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit">Guardar</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script> -->
+</body>
+</html>

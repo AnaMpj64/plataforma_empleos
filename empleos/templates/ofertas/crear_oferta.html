@@ -1,0 +1,69 @@
+{% load widget_tweaks %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Publicar Nueva Oferta</title>
+</head>
+<body>
+    <section class="vh-150 gradient-custom">
+        <div class="container py-5 h-100">
+            <div class="row justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                        <div class="card-body p-5">
+                            <h2 class="text-center mb-4 fw-bold">Publicar Nueva Oferta</h2>
+                            
+                            <form method="post" id="oferta-form">
+                                {% csrf_token %}
+                                
+                                <div class="form-outline form-white mb-4">
+                                    {{ form.titulo|add_class:"form-control" }}
+                                    <label class="form-label">Título de la Oferta</label>
+                                </div>
+                            
+                                <div class="form-outline form-white mb-4">
+                                    {{ form.descripcion|add_class:"form-control" }}
+                                    <label class="form-label">Descripción</label>
+                                </div>
+                            
+
+                                <div id="requisitos-container">
+                                    <label class="form-label text-white">Ingrese los requisitos</label>
+                                    <div class="d-flex align-items-center mb-2 requisito-item">
+                                        <input type="text" class="form-control bg-dark text-white me-2 requisito-input" placeholder="Para un nuevo requisito, clic en +">
+                                        <button type="button" class="btn btn-success btn-add-requisito">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            
+
+                                <input type="hidden" name="requisitos" id="requisitos-json">
+                                
+                                <br/>
+                                <div class="mb-4">
+                                    <label class="form-label text-white">Criterios de Inclusión</label>
+                                    <div class="form-check text-start">
+                                        {{ form.criterios_inclusion }}
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-outline-light btn-lg w-100">Publicar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
