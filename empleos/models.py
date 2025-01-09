@@ -49,13 +49,30 @@ class Empresa(PerfilBase):
     def __str__(self):
         return self.nombre_empresa
 
-    def publicar_oferta(self):
-        # a futuro aqui se pone el metodo de publicar oferta
-        pass
+    def publicar_oferta(self, titulo, descripcion, requisitos, criterios_inclusion=None, estado="abierta"):
+        """
+        Publica una nueva oferta de empleo asociada a esta empresa.
+        """
+        nueva_oferta = OfertaDeEmpleo.objects.create(
+        empresa=self,
+        titulo=titulo,
+        descripcion=descripcion,
+        requisitos=requisitos,
+        estado=estado
+    )
+        if criterios_inclusion:
+            nueva_oferta.criterios_inclusion.set(criterios_inclusion)
+        return nueva_oferta
+        
 
-    def gestionar_ofertas(self):
-        # aqui va a ir el metodo de gestionar ofertas
-        pass
+    def gestionar_ofertas(self,estado):
+        """
+        retorna las ofertas de empleo asociadas a esta empresa
+        si se especifica un estado, filtra las ofertas por dicho estado
+        """
+        if estado:
+            return self.ofertas.filter(estado=estado)
+        return self.ofertas.all()
 
 class Candidato(PerfilBase):
     user = models.OneToOneField(

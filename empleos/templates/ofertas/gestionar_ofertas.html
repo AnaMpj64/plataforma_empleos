@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Gestionar Ofertas</title>
+</head>
+<body>
+    <section class="vh-100 gradient-custom">
+        <div class="container py-5">
+            <h2 class="text-center text-white fw-bold mb-4">Gestionar Ofertas Publicadas</h2>
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <table class="table table-dark table-hover align-middle text-white">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Título</th>
+                                <th scope="col">Fecha de Publicación</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for oferta in ofertas %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ oferta.titulo }}</td>
+                                <td>{{ oferta.fecha_publicacion|date:"d/m/Y" }}</td>
+                                <td>
+                                    {% if oferta.estado == "abierta" %}
+                                        <span class="badge bg-success">Abierta</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Cerrada</span>
+                                    {% endif %}
+                                </td>                                
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No hay ofertas publicadas</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="text-end">
+                        <a href="{% url 'crear_oferta' %}" class="btn btn-outline-light btn-lg">Nueva Oferta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+</body>
+</html>

@@ -145,5 +145,19 @@ class CrearOfertaView(View):
 
         return render(request, "ofertas/crear_oferta.html", {"form": form})
 
+class GestionarOfertasView(View):
+    @method_decorator(login_required)
+    def get(self, request):
+        # Obtener el perfil de la empresa asociada al usuario autenticado
+        empresa = Empresa.objects.filter(user=request.user).first()
+        if not empresa:
+            return redirect("completar_perfil_base")  # Redirigir si no tiene perfil de empresa
+
+        # Obtener las ofertas de empleo de la empresa
+        ofertas = empresa.ofertas.all()  # Asumiendo una relación "empresa -> ofertas"
+        context = {
+            "ofertas": ofertas,
+        }
+        return render(request, "ofertas/gestionar_ofertas.html", context)
 
 
