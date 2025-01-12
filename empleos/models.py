@@ -83,7 +83,9 @@ class Candidato(PerfilBase):
     habilidades_blandas = models.JSONField(blank=True, null=True, help_text="Habilidades blandas")
     idiomas = models.JSONField(blank=True, null=True, help_text="Idiomas conocidos")
     experiencia_laboral = models.JSONField(blank=True, null=True, help_text="Experiencia laboral")
+    instituciones_educativas = models.JSONField(blank=True, null=True)
     cursos_certificados = models.JSONField(blank=True, null=True, help_text="Cursos certificados del candidato")
+    descripcion_personal = models.TextField(blank=True, null=True)
     GRADO_DISCAPACIDAD_CHOICES = [
         ('ninguna', 'Ninguna discapacidad (del 0% y 4%)'),
         ('leve', 'Leve (del 5% y 24%)'),
@@ -100,7 +102,8 @@ class Candidato(PerfilBase):
         null=True,
         help_text="Grado de discapacidad del candidato"
     )
-    discapacidades = models.JSONField(blank=True, null=True, help_text="Detalles de discapacidades")
+    discapacidades = models.CharField(max_length=25, blank=True, null=True, help_text="Detalles de discapacidades")
+    documentos_adjuntos = models.FileField(upload_to='documentos/', blank=True, null=True)
 
     def aplicar_oferta(self):
         # aqui va a ir el metodo para postular a ofertas

@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from empleos.views import CompletarDatosCandidatoView, CompletarDatosEmpresaView, CompletarPerfilBaseView, CrearOfertaView, VerPerfilEmpresaView, redireccionar_despues_login
+from empleos.views import CompletarDatosCandidatoView, CompletarDatosEmpresaView, CompletarPerfilBaseView, CrearOfertaView, OfertasLaboralesView, VerPerfilEmpresaView, redireccionar_despues_login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +30,6 @@ urlpatterns = [
     path('crear-oferta/', CrearOfertaView.as_view(), name='crear_oferta'),
     path('redireccionar/', redireccionar_despues_login, name='redireccionar_despues_login'),
     path('perfil-empresa/', VerPerfilEmpresaView.as_view(), name="ver_perfil_empresa"),
+    path("ofertas-laborales/", OfertasLaboralesView.as_view(), name="ofertas_laborales"),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

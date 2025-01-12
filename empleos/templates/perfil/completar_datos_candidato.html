@@ -7,59 +7,220 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <title>Completar Datos Candidato</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+        }
+        .card {
+            background-color: #333;
+            border-radius: 1rem;
+            color: white;
+            padding: 30px;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .form-control {
+            background-color: #222 !important;
+            color: white !important;
+            border: 1px solid #666666 !important;
+        }
+        .form-control:focus {
+            color: white;
+        }
+        .btn-outline-light {
+            width: 100%;
+        }
+        .form-select {
+            background-color: #222 !important;
+            color: white !important;
+            border: 1px solid #555 !important;
+        }
+
+        .form-select:focus {
+            background-color: #333 !important;
+            color: white !important;
+            border-color: #fff !important;
+            box-shadow: none !important;
+        }
+    </style>
 </head>
 <body>
-    <h1>Aquí se mostrará el formulario para datos de candidato (aún en desarrollo)</h1>
-   <!--  <section class="vh-100 gradient-custom">
+    <section class="vh-100 gradient-custom">
         <div class="container py-5 h-100">
-            <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                    <div class="card bg-dark text-white" style="border-radius: 1rem;">
-                        <div class="card-body p-5 text-center">
-
-                            <div class="mb-md-5 mt-md-4 pb-5">
-                                <h2 class="fw-bold mb-2 text-uppercase">Completar Datos Candidato</h2>
-                                <p class="text-white-50 mb-5">Por favor completa los datos específicos como candidato</p>
-
-                                <form method="post" enctype="multipart/form-data">
-                                    {% csrf_token %}
-
-                                    <div data-mdb-input-init class="form-outline form-white mb-4">
-                                        {{ form.portafolio_url|add_class:"form-control form-control-lg" }}
-                                        <label class="form-label">URL del Portafolio</label>
+            <div class="row justify-content-center align-items-center h-100">
+                <div class="col-lg-10 col-md-12">
+                    <div class="card p-4">
+                        <h2 class="text-center mb-4 fw-bold">Completar Currículum</h2>
+                        <p class="text-center text-white-50 mb-5">Por favor completa estos datos para poder continuar</p>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% if form.errors %}
+                                    <div class="alert alert-danger">
+                                        <ul>
+                                            {% for field, errors in form.errors.items %}
+                                                <li>{{ field }}: {{ errors.as_text|linebreaks }}</li>
+                                            {% endfor %}
+                                        </ul>
                                     </div>
-
-                                    <div data-mdb-input-init class="form-outline form-white mb-4">
-                                        {{ form.nivel_estudios|add_class:"form-control form-control-lg" }}
-                                        <label class="form-label">Nivel de Estudios</label>
+                            {% endif %}
+                            <!-- URL del Portafolio -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label text-white"> </label>
+                                    <div class="form-outline">
+                                        {{ form.portafolio_url|add_class:"form-control" }}
+                                        <label class="form-label text-white">URL del Portafolio</label>
                                     </div>
-
-                                    <div data-mdb-input-init class="form-outline form-white mb-4">
-                                        {{ form.habilidades_tecnicas|add_class:"form-control form-control-lg" }}
-                                        <label class="form-label">Habilidades Técnicas</label>
+                                </div>
+                                <!-- Nivel de Estudios -->
+                                <div class="col-md-6">
+                                    <div class="form-outline">
+                                        <label class="form-label text-white">Nivel de Estudios</label>
+                                        {{ form.nivel_estudios|add_class:"form-select" }}
                                     </div>
-
-                                    <div data-mdb-input-init class="form-outline form-white mb-4">
-                                        {{ form.habilidades_blandas|add_class:"form-control form-control-lg" }}
-                                        <label class="form-label">Habilidades Blandas</label>
-                                    </div>
-
-                                    <div data-mdb-input-init class="form-outline form-white mb-4">
-                                        {{ form.idiomas|add_class:"form-control form-control-lg" }}
-                                        <label class="form-label">Idiomas</label>
-                                    </div>
-
-                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit">Guardar</button>
-                                </form>
+                                </div>
                             </div>
 
-                        </div>
+                            <!-- Habilidades Técnicas y Blandas -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label text-white">Habilidades Técnicas</label>
+                                    <select class="form-select" name="tecnicas" multiple>
+                                        <option value="Programación">Programación</option>
+                                        <option value="Diseño gráfico">Diseño gráfico</option>
+                                        <option value="Contabilidad">Contabilidad</option>
+                                        <option value="Administración de redes">Administración de redes</option>
+                                        <option value="Gestión de proyectos">Gestión de proyectos</option>
+                                        <option value="Operación de maquinaria">Operación de maquinaria</option>
+                                        <option value="Gestión de inventarios">Gestión de inventarios</option>
+                                        <option value="Traducción">Traducción</option>
+                                        <option value="Edición de video">Edición de video</option>
+                                        <option value="Marketing digital">Marketing digital</option>
+                                        <option value="Reparación de equipos electrónicos">Reparación de equipos electrónicos</option>
+                                        <option value="Análisis financiero">Análisis financiero</option>
+                                        <option value="Ventas">Ventas</option>
+                                        <option value="Soporte técnico">Soporte técnico</option><!-- Opciones aquí -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-white">Habilidades Blandas</label>
+                                    <select class="form-select" name="Blandas" multiple>
+                                        <option value="Comunicación">Comunicación</option>
+                                        <option value="Liderazgo">Liderazgo</option>
+                                        <option value="Resolución de problemas">Resolución de problemas</option>
+                                        <option value="Trabajo en equipo">Trabajo en equipo</option>
+                                        <option value="Adaptabilidad">Adaptabilidad</option>
+                                        <option value="Organización">Organización</option>
+                                        <option value="Gestión del tiempo">Gestión del tiempo</option>
+                                        <option value="Pensamiento crítico">Pensamiento crítico</option>
+                                        <option value="Empatía">Empatía</option>
+                                        <option value="Ética laboral">Ética laboral</option>
+                                        <option value="Inteligencia emocional">Inteligencia emocional</option>
+                                        <option value="Negociación">Negociación</option>
+                                        <option value="Networking">Networking</option>
+                                        <option value="Resolución de conflictos">Resolución de conflictos</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <!-- Idiomas (Dinámico) -->
+                                <div id="idiomas-container" class="col-md-6">
+                                    <label class="form-label text-white">Idiomas</label>
+                                    <input type="hidden" name="idiomas">
+                                    <div class="d-flex align-items-center">
+                                        <input type="text" class="form-control me-2" placeholder="Idioma" name="idiomas_key[]">
+                                        <input type="text" class="form-control" placeholder="Nivel" name="idiomas_value[]">
+                                        <button type="button" class="btn btn-light ms-2" onclick="addIdioma()">+</button>
+                                    </div>
+                                </div>
+
+                                <!-- Experiencia Laboral (Dinámico) -->
+                                <div id="experiencia-container" class="col-md-6">
+                                    <label class="form-label text-white">Experiencia Laboral</label>
+                                    <input type="hidden" name="experiencia_laboral">
+                                    <div class="d-flex align-items-center">
+                                        <input type="text" class="form-control me-2" placeholder="Empresa" name="experiencia_empresa[]">
+                                        <input type="text" class="form-control" placeholder="Tiempo laborado" name="experiencia_tiempo[]">
+                                        <button type="button" class="btn btn-light ms-2" onclick="addExperiencia()">+</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Instituciones Educativas y Títulos (Dinámico) -->
+                            <div id="educacion-container" class="mb-4">
+                                <label class="form-label text-white">Instituciones Educativas y Títulos</label>
+                                <input type="hidden" name="instituciones_educativas">
+                                <div class="d-flex align-items-center">
+                                    <input type="text" class="form-control me-2" placeholder="Institución" name="instituciones_nombre[]">
+                                    <input type="text" class="form-control" placeholder="Título obtenido" name="instituciones_titulo[]">
+                                    <button type="button" class="btn btn-light ms-2" onclick="addEducacion()">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Cursos y Certificados (Dinámico) -->
+                            <div id="cursos-container" class="mb-4">
+                                <label class="form-label text-white">Cursos y Certificados</label>
+                                <input type="hidden" name="cursos_certificados">
+                                <div class="d-flex align-items-center">
+                                    <input type="text" class="form-control text-white" placeholder="Curso o Certificado" name="cursos_certificados[]">
+                                    <button type="button" class="btn btn-light ms-2" onclick="addCurso()">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Descripción Personal -->
+                            <div class="form-outline mb-4">
+                                <textarea name="descripcion_personal" class="form-control" rows="4">{{ form.descripcion_personal.value }}</textarea>
+                                <label class="form-label text-white">Descripción Personal</label>
+                            </div>
+
+                            <!-- Grado de Discapacidad -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-outline">
+                                        <label class="form-label text-white">Grado de Discapacidad</label>
+                                        {{ form.grado_discapacidad|add_class:"form-select" }}
+                                    </div>
+                                </div>
+
+                                <!-- Discapacidades Específicas -->
+                                <div class="col-md-6">
+                                    <div class="form-outline">
+                                        <label class="form-label text-white">Discapacidades Específicas</label>
+                                        <select class="form-select" name="discapacidades">
+                                            <option value="">----------</option>
+                                            <option value="Discapacidad auditiva">Discapacidad auditiva</option>
+                                            <option value="Discapacidad visual">Discapacidad visual</option>
+                                            <option value="Discapacidad para el uso del lenguaje">Discapacidad para el uso del lenguaje</option>
+                                            <option value="Discapacidad física">Discapacidad física</option>
+                                            <option value="Discapacidad intelectual">Discapacidad intelectual</option>
+                                            <option value="Discapacidad psicosocial">Discapacidad psicosocial</option>
+                                            <option value="Discapacidades múltiples">Discapacidades múltiples</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Documentos Adjuntos -->
+                            <div class="form-outline mb-4">
+                                <label class="form-label text-white">Adjuntar Documentos (PDF)</label>
+                                {{ form.documentos_adjuntos|add_class:"form-control" }}
+                                <input type="file" class="form-control" name="documentos_adjuntos" accept=".pdf">
+                            </div>
+
+                            <button type="submit" class="btn btn-outline-light btn-lg">Guardar</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script> -->
+
+    <script src="{% static 'js/dynamicfields.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
 </body>
 </html>

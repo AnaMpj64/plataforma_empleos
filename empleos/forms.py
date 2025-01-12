@@ -48,3 +48,21 @@ class OfertaDeEmpleoForm(forms.ModelForm):
     class Meta:
         model = OfertaDeEmpleo
         fields = ['titulo', 'descripcion', 'requisitos', 'criterios_inclusion']
+
+class CompletarDatosCandidatoForm(forms.ModelForm):
+    descripcion_personal = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4, 'class': 'form-control form-control-lg'}),
+        required=False
+    )
+    class Meta:
+        model = Candidato
+        fields = [
+            'portafolio_url', 'nivel_estudios', 'habilidades_tecnicas', 'habilidades_blandas', 'idiomas',
+            'experiencia_laboral', 'instituciones_educativas', 'cursos_certificados', 'descripcion_personal',
+            'grado_discapacidad', 'discapacidades', 'documentos_adjuntos'
+        ]
+        widgets = {
+            'descripcion_personal': forms.Textarea(attrs={'rows': 4}),
+            'habilidades_tecnicas': forms.CheckboxSelectMultiple(),
+            'habilidades_blandas': forms.CheckboxSelectMultiple(),
+        }
