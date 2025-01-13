@@ -112,6 +112,10 @@
         .thirteen h1:after {
         right:-20px;
         }
+
+        .text-dark {
+        font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -135,6 +139,7 @@
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userMenu">
                     <li><a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesión</a></li>
                     <li><a class="dropdown-item" href="{% url 'completar_datos_candidato' %}">Editar perfil</a></li>
+                    <li><a class="dropdown-item" href="{% url 'mis_postulaciones' %}">Mis postulaciones</a></li>
                 </ul>
             </div>
         </div>
@@ -157,7 +162,7 @@
                                 <img src="{% static 'images/image.png' %}" alt="Logo Empresa" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                                 <span class="text-dark fw-bold">{{ oferta.empresa.nombre_empresa }}</span>
                             </div>
-                            <a href="#" class="btn-apply">Ver más <i class="fas fa-arrow-right"></i></a>
+                            <a href="{% url 'oferta_detalle' oferta.id %}" class="btn-apply">Ver más <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>

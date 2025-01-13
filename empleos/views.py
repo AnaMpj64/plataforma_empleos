@@ -1,9 +1,11 @@
 import json
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
-from .models import Empresa, Candidato, OfertaDeEmpleo
+from django.views.generic import DetailView, ListView
+from .models import Empresa, Candidato, OfertaDeEmpleo, SolicitudDeEmpleo
 from .forms import CandidatoForm, CompletarDatosCandidatoForm, EmpresaForm, OfertaDeEmpleoForm, PerfilBaseForm
 
 
@@ -145,22 +147,29 @@ class CrearOfertaView(View):
     def post(self, request):
         empresa = Empresa.objects.filter(user=request.user).first()
         if not empresa:
-            return redirect("completar_perfil_base") 
+            return redirect("completar_perfil_base")
 
         form = OfertaDeEmpleoForm(request.POST)
         if form.is_valid():
             oferta = form.save(commit=False)
-            oferta.empresa = empresa 
+            oferta.empresa = empresa
 
+            # Procesar requisitos
             requisitos_json = request.POST.get('requisitos', '[]')
             try:
-                requisitos_lista = json.loads(requisitos_json)  
-                oferta.requisitos = requisitos_lista  
+                oferta.requisitos = json.loads(requisitos_json)
             except json.JSONDecodeError:
-                oferta.requisitos = []  
+                oferta.requisitos = []
+
+            # Procesar preguntas
+            preguntas_json = request.POST.get('preguntas', '[]')
+            try:
+                oferta.preguntas = json.loads(preguntas_json)
+            except json.JSONDecodeError:
+                oferta.preguntas = []
 
             oferta.save()
-            form.save_m2m() 
+            form.save_m2m()
             return redirect("ver_perfil_empresa")
 
         return render(request, "ofertas/crear_oferta.html", {"form": form})
@@ -186,6 +195,41 @@ class OfertasLaboralesView(View):
 
         ofertas = OfertaDeEmpleo.objects.order_by('-fecha_publicacion')[:10]
         return render(request, "ofertas/ofertas_laborales.html", {"ofertas": ofertas})
+    
+class OfertaDetalleView(DetailView):
+    model = OfertaDeEmpleo
+    template_name = "ofertas/oferta_detalle.html"
+    context_object_name = "oferta"
+
+    def get_object(self):
+        id_ = self.kwargs.get("id")
+        return OfertaDeEmpleo.objects.get(id=id_)
+    
+@login_required
+def enviar_solicitud(request):
+    if request.method == "POST":
+        candidato = Candidato.objects.get(user=request.user)
+        oferta_id = request.POST.get("oferta_id")
+        respuestas = json.loads(request.POST.get("respuestas", "{}"))
+
+        try:
+            oferta = OfertaDeEmpleo.objects.get(id=oferta_id)
+            solicitud = SolicitudDeEmpleo.objects.create(
+                candidato=candidato,
+                oferta=oferta,
+                respuestas=respuestas
+            )
+            return JsonResponse({"status": "success", "message": "Solicitud enviada correctamente"})
+        except OfertaDeEmpleo.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "La oferta no existe"})
+    return JsonResponse({"status": "error", "message": "Método no permitido"})
+
+class MisPostulacionesView(ListView):
+    model = SolicitudDeEmpleo
+    template_name = 'perfil/mis_postulaciones.html'
+
+    def get_queryset(self):
+        return SolicitudDeEmpleo.objects.filter(candidato__user=self.request.user).order_by('-fecha_solicitud')
 
 
 

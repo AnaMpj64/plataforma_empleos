@@ -128,6 +128,7 @@ class OfertaDeEmpleo(models.Model):
     fecha_publicacion = models.DateTimeField(auto_now_add=True, help_text="Fecha de publicación")
     estado = models.CharField(max_length=20, choices=[('abierta', 'Abierta'), ('cerrada', 'Cerrada')], default='abierta', help_text="Estado de la oferta")
     criterios_inclusion = models.ManyToManyField(CriterioInclusión, blank=True, help_text="Criterios de inclusión para la oferta")
+    preguntas = models.JSONField(help_text="Preguntas que el candidato debe responder", blank=True, null=True)
 
     class Meta:
         verbose_name = "Oferta de empleo"
@@ -151,5 +152,21 @@ class Archivo(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+class SolicitudDeEmpleo(models.Model):
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('rechazada', 'Rechazada'),
+        ('aceptada', 'Aceptada'),
+    ]
+
+    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name="solicitudes")
+    oferta = models.ForeignKey(OfertaDeEmpleo, on_delete=models.CASCADE, related_name="solicitudes")
+    respuestas = models.JSONField(help_text="Respuestas del candidato a las preguntas", blank=True, null=True)
+    fecha_solicitud = models.DateTimeField(auto_now_add=True, help_text="Fecha de la solicitud")
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente', help_text="Estado de la solicitud")
+
+    def __str__(self):
+        return f"Solicitud de {self.candidato.user.username} para {self.oferta.titulo} - Estado: {self.estado}"
 
 

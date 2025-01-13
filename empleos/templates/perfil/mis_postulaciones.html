@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <title>Mis Postulaciones</title>
+    <style>
+        body { background: #ddd; }
+        .navbar { background-color: #333; color: white; padding: 10px; }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .navbar .dropdown-menu { background-color: #333; }
+        .navbar .dropdown-item { color: white; }
+        .table-container { margin-top: 30px; }
+        .table { width: 100%; background-color: white; border-radius: 12px; }
+        .table th, .table td { text-align: center; padding: 10px; }
+        .badge { padding: 5px 10px; border-radius: 12px; }
+        .badge-aceptada { background-color: #28a745; color: white; }
+        .badge-rechazada { background-color: #dc3545; color: white; }
+        .badge-pendiente { background-color: #b7b429; color: white; }
+        .search-bar { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de navegación -->
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <img src="{% static 'images/image.png' %}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <span class="text-white" style="font-size: 16px;">Hola, {{ user.username }}</span>
+        </div>
+        <div>
+            <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle" type="button" id="userMenu" data-mdb-toggle="dropdown" aria-expanded="false">
+                    Opciones
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userMenu">
+                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesión</a></li>
+                    <li><a class="dropdown-item" href="{% url 'completar_datos_candidato' %}">Editar perfil</a></li>
+                    <li><a class="dropdown-item" href="{% url 'mis_postulaciones' %}">Mis postulaciones</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tabla de postulaciones -->
+    <div class="container table-container">
+        <div class="search-bar">
+            <input type="text" class="form-control" id="searchInput" placeholder="Buscar en las postulaciones...">
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Empresa</th>
+                    <th>Cargo</th>
+                    <th>Fecha de Postulación</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="postulacionesTable">
+                {% for solicitud in object_list %}
+                    <tr>
+                        <td>{{ solicitud.oferta.empresa.nombre_empresa }}</td>
+                        <td>{{ solicitud.oferta.titulo }}</td>
+                        <td>{{ solicitud.fecha_solicitud|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if solicitud.estado == 'pendiente' %}
+                                <span class="badge badge-pendiente">Pendiente</span>
+                            {% elif solicitud.estado == 'aceptada' %}
+                                <span class="badge badge-aceptada">Aceptada</span>
+                            {% else %}
+                                <span class="badge badge-rechazada">Rechazada</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">No has realizado ninguna postulación.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Búsqueda en la tabla
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#postulacionesTable tr');
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+                for (let i = 0; i < cells.length; i++) {
+                    if (cells[i].textContent.toLowerCase().includes(filter)) {
+                        match = true;
+                        break;
+                    }
+                }
+                row.style.display = match ? '' : 'none';
+            });
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+</body>
+</html>

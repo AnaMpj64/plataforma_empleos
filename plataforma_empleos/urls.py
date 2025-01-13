@@ -19,6 +19,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+
+from empleos import views
 from empleos.views import CompletarDatosCandidatoView, CompletarDatosEmpresaView, CompletarPerfilBaseView, CrearOfertaView, OfertasLaboralesView, VerPerfilEmpresaView, redireccionar_despues_login
 
 urlpatterns = [
@@ -31,5 +33,8 @@ urlpatterns = [
     path('redireccionar/', redireccionar_despues_login, name='redireccionar_despues_login'),
     path('perfil-empresa/', VerPerfilEmpresaView.as_view(), name="ver_perfil_empresa"),
     path("ofertas-laborales/", OfertasLaboralesView.as_view(), name="ofertas_laborales"),
+    path('oferta/<int:id>/', views.OfertaDetalleView.as_view(), name='oferta_detalle'),
+    path("enviar-solicitud/", views.enviar_solicitud, name="enviar_solicitud"),
+    path('mis-postulaciones/', views.MisPostulacionesView.as_view(), name='mis_postulaciones'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

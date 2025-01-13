@@ -44,10 +44,14 @@ class OfertaDeEmpleoForm(forms.ModelForm):
         required=False,
         widget=forms.HiddenInput, 
     )
+    preguntas = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput
+    )
 
     class Meta:
         model = OfertaDeEmpleo
-        fields = ['titulo', 'descripcion', 'requisitos', 'criterios_inclusion']
+        fields = ['titulo', 'descripcion', 'requisitos', 'criterios_inclusion', 'preguntas']
 
 class CompletarDatosCandidatoForm(forms.ModelForm):
     descripcion_personal = forms.CharField(
@@ -66,3 +70,4 @@ class CompletarDatosCandidatoForm(forms.ModelForm):
             'habilidades_tecnicas': forms.CheckboxSelectMultiple(),
             'habilidades_blandas': forms.CheckboxSelectMultiple(),
         }
+

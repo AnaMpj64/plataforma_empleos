@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+    <title>{{ oferta.titulo }}</title>
+    <style>
+                body {
+            background: #ddd;
+        }
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar .dropdown-menu {
+            background-color: #333;
+        }
+        .navbar .dropdown-item {
+            color: white;
+        }
+        .offer-detail-card {
+            margin-top: 30px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 5px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7, #ffefa0);
+            transition: all 0.3s ease;
+        }
+        .offer-detail-card h1 {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7, #ffefa0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .offer-detail-card .btn-apply {
+            background: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7);
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .offer-detail-card .btn-apply:hover {
+            background-color: #6a11cb;
+        }
+
+        .button-card{
+            text-align: center;
+        }
+
+        .modal-content {
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .modal-header {
+            background: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7, #ffefa0);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de navegación -->
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <img src="{% static 'images/image.png' %}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <span class="text-white" style="font-size: 16px;">Hola, {{ user.username }}</span>
+        </div>
+        <div>
+            <div class="dropdown">
+                <button
+                    class="btn btn-dark dropdown-toggle"
+                    type="button"
+                    id="userMenu"
+                    data-mdb-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    Opciones
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userMenu">
+                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesión</a></li>
+                    <li><a class="dropdown-item" href="{% url 'completar_datos_candidato' %}">Editar perfil</a></li>
+                    <li><a class="dropdown-item" href="{% url 'mis_postulaciones' %}">Mis postulaciones</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor de oferta -->
+    <div class="container">
+        <div class="offer-detail-card">
+            <h1>{{ oferta.titulo }}</h1>
+            <p><strong>Empresa:</strong> {{ oferta.empresa.nombre_empresa }}</p>
+            <p><strong>Fecha de publicación:</strong> {{ oferta.fecha_publicacion|date:"d/m/Y" }}</p>
+            <p><strong>Descripción:</strong> {{ oferta.descripcion }}</p>
+            <p><strong>Requisitos:</strong></p>
+            <ul>
+                {% for requisito in oferta.requisitos %}
+                    <li>{{ requisito }}</li>
+                {% endfor %}
+            </ul>
+            <div class="button-card">
+                <a href="#" class="btn-apply" data-mdb-toggle="modal" data-mdb-target="#applyModal">Aplicar a esta oferta</a>
+            </div>
+        </div>
+    </div>
+
+    <script >
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('sendApplicationBtn').addEventListener('click', function () {
+                const form = document.getElementById('applyForm');
+                const formData = new FormData(form);
+
+                let respuestas = {};
+                formData.forEach((value, key) => {
+                    if (key.startsWith('respuesta_')) {
+                        respuestas[key] = value;
+                    }
+                });
+
+                formData.append('respuestas', JSON.stringify(respuestas));
+
+                fetch('/enviar-solicitud/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            title: '¡Solicitud enviada!',
+                            text: 'Te has postulado correctamente a esta oferta.',
+                            html: '<div id="lottie-container" style="width: 200px; height: 200px; margin: auto;"></div>',
+                            showConfirmButton: true,
+                            didOpen: () => {
+                                lottie.loadAnimation({
+                                    container: document.getElementById('lottie-container'),
+                                    renderer: 'svg',
+                                    loop: false,
+                                    autoplay: true,
+                                    path: '/static/animations/success.json'
+                                });
+                            }
+                        }).then(() => {
+                            window.location.href = '/ofertas-laborales/';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Algo salió mal. Inténtalo nuevamente.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            });
+
+        });
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+</body>
+</html>
+
+<div class="modal fade" id="applyModal" tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="applyModalLabel">Responde las Preguntas</h5>
+                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="applyForm">
+                    {% csrf_token %}
+                    {% for pregunta in oferta.preguntas %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ pregunta }}</label>
+                            <input type="text" class="form-control" name="respuesta_{{ forloop.counter }}">
+                        </div>
+                    {% endfor %}
+                    <input type="hidden" name="oferta_id" value="{{ oferta.id }}">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="sendApplicationBtn">Enviar solicitud</button>
+            </div>
+        </div>
+    </div>
+</div>

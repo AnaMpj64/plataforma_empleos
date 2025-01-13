@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const requisitosContainer = document.getElementById("requisitos-container");
     const requisitosJsonInput = document.getElementById("requisitos-json");
     const addRequisitoButton = document.querySelector(".btn-add-requisito");
+    const fileInputEmpresa = document.getElementById('foto-input');
+    const previewImageEmpresa = document.getElementById('preview');
 
     if (fileInputContainer && profilePicPreviewContainer && cameraIcon) {
         fileInputContainer.addEventListener('change', function (event) {
@@ -21,9 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-    const fileInputEmpresa = document.getElementById('foto-input');
-    const previewImageEmpresa = document.getElementById('preview');
 
     if (fileInputEmpresa && previewImageEmpresa) {
         fileInputEmpresa.addEventListener('change', function (event) {
@@ -44,33 +43,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function agregarRequisito() {
-        const requisitoItem = document.createElement("div");
-        requisitoItem.classList.add("d-flex", "align-items-center", "mb-2", "requisito-item");
-        requisitoItem.innerHTML = `
-            <input type="text" class="form-control me-2 requisito-input" placeholder="Ingrese un requisito">
-            <button type="button" class="btn btn-danger btn-remove-requisito">
+    function agregarCampo(containerId, inputClass, placeholder) {
+        const container = document.getElementById(containerId);
+        const item = document.createElement("div");
+        item.classList.add("d-flex", "align-items-center", "mb-2");
+        item.innerHTML = `
+            <input type="text" class="form-control me-2 ${inputClass}" placeholder="${placeholder}">
+            <button type="button" class="btn btn-danger btn-remove">
                 <i class="fas fa-minus"></i>
             </button>
         `;
-        requisitosContainer.appendChild(requisitoItem);
+        container.appendChild(item);
     }
 
     if (addRequisitoButton) {
         addRequisitoButton.addEventListener("click", function () {
-            agregarRequisito();
+            agregarCampo("requisitos-container", "requisito-input", "Ingrese un requisito");
         });
     }
 
-    requisitosContainer.addEventListener("click", function (e) {
-        if (e.target.closest(".btn-remove-requisito")) {
-            e.target.closest(".requisito-item").remove();
+    document.querySelector(".btn-add-pregunta").addEventListener("click", function () {
+        agregarCampo("preguntas-container", "pregunta-input", "Ingrese una pregunta");
+    });
+
+    document.addEventListener("click", function (e) {
+        if (e.target.closest(".btn-remove")) {
+            e.target.closest(".d-flex").remove();
         }
     });
 
     const ofertaForm = document.getElementById("oferta-form");
     if (ofertaForm) {
         ofertaForm.addEventListener("submit", function () {
+            // Serializar requisitos
             const requisitos = [];
             document.querySelectorAll(".requisito-input").forEach(input => {
                 if (input.value.trim() !== "") {
@@ -78,6 +83,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
             requisitosJsonInput.value = JSON.stringify(requisitos);
+    
+            // Serializar preguntas
+            const preguntas = [];
+            document.querySelectorAll(".pregunta-input").forEach(input => {
+                if (input.value.trim() !== "") {
+                    preguntas.push(input.value.trim());
+                }
+            });
+            document.getElementById("preguntas-json").value = JSON.stringify(preguntas);
         });
     }
 });
