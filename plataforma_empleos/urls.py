@@ -21,7 +21,7 @@ from django.urls import include, path
 
 
 from empleos import views
-from empleos.views import CompletarDatosCandidatoView, CompletarDatosEmpresaView, CompletarPerfilBaseView, CrearOfertaView, OfertasLaboralesView, VerPerfilEmpresaView, redireccionar_despues_login
+from empleos.views import CompletarDatosCandidatoView, CompletarDatosEmpresaView, CompletarPerfilBaseView, CrearOfertaView, EditarOfertaView, GestionarOfertasView, OfertasLaboralesView, VerPerfilCandidatoView, VerPerfilEmpresaView, redireccionar_despues_login
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,5 +36,11 @@ urlpatterns = [
     path('oferta/<int:id>/', views.OfertaDetalleView.as_view(), name='oferta_detalle'),
     path("enviar-solicitud/", views.enviar_solicitud, name="enviar_solicitud"),
     path('mis-postulaciones/', views.MisPostulacionesView.as_view(), name='mis_postulaciones'),
+    path('calificar-experiencia/<int:solicitud_id>/', views.calificar_experiencia, name='calificar_experiencia'),
+    path('gestionar-ofertas/', GestionarOfertasView.as_view(), name='gestionar_ofertas'),
+    path('editar-oferta/<int:id>/', EditarOfertaView.as_view(), name='editar_oferta'),
+    path('postulaciones/<int:oferta_id>/', views.VerPostulacionesView.as_view(), name='ver_postulaciones'),
+    path('ver-perfil/<int:candidato_id>/<int:postulacion_id>/', VerPerfilCandidatoView.as_view(), name='ver_perfil_candidato'),
+    path('actualizar-postulacion/<int:id>/', views.actualizar_postulacion, name='actualizar_postulacion'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

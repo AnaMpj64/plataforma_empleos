@@ -1,0 +1,212 @@
+{% load static widget_tweaks %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Editar Oferta</title>
+    <style>
+        body {
+            background: #ddd; 
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .form-control {
+            background-color: #222 !important;
+            color: white !important;
+            border: 1px solid #666666 !important;
+        }
+        .form-control:focus {
+            color: white;
+        }
+        .btn-outline-light {
+            width: 100%;
+        }
+        .form-select {
+            background-color: #222 !important;
+            color: white !important;
+            border: 1px solid #555 !important;
+        }
+
+        .form-select:focus {
+            background-color: #333 !important;
+            color: white !important;
+            border-color: #fff !important;
+            box-shadow: none !important;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar .dropdown-menu {
+            background-color: #333;
+        }
+        .navbar .dropdown-item {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+     <!-- Barra de navegación -->
+     <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <img src="{% static 'images/image.png' %}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <span class="text-white" style="font-size: 16px;">Hola, {{ user.username }}</span>
+        </div>
+        <div>
+            <div class="dropdown">
+                <button
+                    class="btn btn-dark dropdown-toggle"
+                    type="button"
+                    id="userMenu"
+                    data-mdb-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    Opciones
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userMenu">
+                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="vh-150 gradient-custom">
+        <div class="container py-5 h-100">
+            <div class="row justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                        <div class="card-body p-5">
+                            <h2 class="text-center mb-4 fw-bold">Editar Oferta</h2>
+                            
+                            <form method="post" id="oferta-form">
+                                {% csrf_token %}
+                                
+                                <div class="form-white mb-4">
+                                    <label class="form-label text-white">Título de la Oferta</label>
+                                    {{ form.titulo|add_class:"form-control" }}
+                                    
+                                </div>
+                            
+                                <div class="form-white mb-4">
+                                    <label class="form-label text-white">Descripción</label>
+                                    {{ form.descripcion|add_class:"form-control" }}
+                                    
+                                </div>
+
+                                <label class="form-label text-white">Requisitos</label>
+                                <div id="requisitos-container">
+                                    {% for requisito in oferta.requisitos %}
+                                        <div class="d-flex align-items-center mb-2 requisito-item">
+                                            <input type="text" class="form-control bg-dark text-white me-2 requisito-input" name="requisito" value="{{ requisito }}">
+                                            <button type="button" class="btn btn-danger btn-remove-requisito"><i class="fas fa-minus"></i></button>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="d-flex align-items-center mb-2">
+                                        <input type="text" class="form-control bg-dark text-white me-2 requisito-input" placeholder="Nuevo requisito">
+                                        <button type="button" class="btn btn-success btn-add-requisito"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+
+                                <label class="form-label text-white mt-4">Preguntas para los Candidatos</label>
+                                <div id="preguntas-container">
+                                    {% for pregunta in oferta.preguntas %}
+                                        <div class="d-flex align-items-center mb-2 pregunta-item">
+                                            <input type="text" class="form-control bg-dark text-white me-2 pregunta-input" name="pregunta" value="{{ pregunta }}">
+                                            <button type="button" class="btn btn-danger btn-remove-pregunta"><i class="fas fa-minus"></i></button>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="d-flex align-items-center mb-2">
+                                        <input type="text" class="form-control bg-dark text-white me-2 pregunta-input" placeholder="Nueva pregunta">
+                                        <button type="button" class="btn btn-success btn-add-pregunta"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-white">Criterios de Inclusión</label>
+                                    {% for criterio in criterios %}
+                                        <div class="form-check">
+                                            <input 
+                                                class="form-check-input" 
+                                                type="checkbox" 
+                                                name="criterios_inclusion" 
+                                                value="{{ criterio.id }}" 
+                                                {% if criterio in oferta.criterios_inclusion.all %}checked{% endif %}
+                                            >
+                                            <label class="form-check-label text-white">{{ criterio.nombre }}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label text-white">Estado de la Oferta</label>
+                                    <select class="form-select bg-dark text-white" name="estado">
+                                        <option value="abierta" {% if oferta.estado == 'abierta' %}selected{% endif %}>Abierta</option>
+                                        <option value="cerrada" {% if oferta.estado == 'cerrada' %}selected{% endif %}>Cerrada</option>
+                                    </select>
+                                </div>
+                                
+                                
+                                <button type="submit" class="btn btn-outline-light btn-lg w-100 mt-4">Guardar Cambios</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Funciones para añadir o quitar requisitos
+            document.querySelector('.btn-add-requisito').addEventListener('click', function() {
+                const container = document.getElementById('requisitos-container');
+                const newInput = document.createElement('div');
+                newInput.classList.add('d-flex', 'align-items-center', 'mb-2', 'requisito-item');
+                newInput.innerHTML = `
+                    <input type="text" class="form-control bg-dark text-white me-2 requisito-input" name="requisito">
+                    <button type="button" class="btn btn-danger btn-remove-requisito"><i class="fas fa-minus"></i></button>
+                `;
+                container.appendChild(newInput);
+            });
+
+            // Función para quitar un requisito
+            document.getElementById('requisitos-container').addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-remove-requisito') || e.target.closest('.btn-remove-requisito')) {
+                    e.target.closest('.requisito-item').remove();
+                }
+            });
+
+            // Funciones para añadir o quitar preguntas
+            document.querySelector('.btn-add-pregunta').addEventListener('click', function() {
+                const container = document.getElementById('preguntas-container');
+                const newInput = document.createElement('div');
+                newInput.classList.add('d-flex', 'align-items-center', 'mb-2', 'pregunta-item');
+                newInput.innerHTML = `
+                    <input type="text" class="form-control bg-dark text-white me-2 pregunta-input" name="pregunta">
+                    <button type="button" class="btn btn-danger btn-remove-pregunta"><i class="fas fa-minus"></i></button>
+                `;
+                container.appendChild(newInput);
+            });
+
+            // Función para quitar una pregunta
+            document.getElementById('preguntas-container').addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-remove-pregunta') || e.target.closest('.btn-remove-pregunta')) {
+                    e.target.closest('.pregunta-item').remove();
+                }
+            });
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+</body>
+</html>

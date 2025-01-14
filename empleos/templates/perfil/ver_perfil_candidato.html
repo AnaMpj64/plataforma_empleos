@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Perfil de {{ candidato.user.username }}</title>
+    <style>
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar .dropdown-menu {
+            background-color: #333;
+        }
+        .navbar .dropdown-item {
+            color: white;
+        }
+
+        .offer-detail-card {
+            margin-top: 30px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 5px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7, #ffefa0);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .offer-detail-card h1 {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7, #ffefa0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .offer-detail-card .btn-apply {
+            background: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7);
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .offer-detail-card .btn-apply:hover {
+            background-color: #6a11cb;
+        }
+
+        .button-card{
+            text-align: center;
+        }
+
+        .card.border-warning {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-width: 2px;
+        }
+        .card-header.bg-warning {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .card-body ul li {
+            display: flex;
+            align-items: flex-start;
+        }
+        .card-body ul li i {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body style="background: #ddd;">
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'ver_perfil_empresa' %}" class="text-white me-3" title="Inicio">
+                <i class="fas fa-home fa-lg"></i>
+            </a>
+            <img src="{% static 'images/image.png' %}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <span class="text-white" style="font-size: 16px;">Hola, {{ request.user.username }}</span>
+        </div>
+        <div>
+            <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle" type="button" id="userMenu" data-mdb-toggle="dropdown" aria-expanded="false">Opciones</button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userMenu">
+                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="card offer-detail-card">
+            <h1>Perfil de {{ candidato.user.username }}</h1>
+            {% if candidato.foto %}
+                <img src="{{ candidato.foto.url }}" alt="Foto de Perfil" class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
+            {% else %}
+                <img src="{% static 'images/default_profile.png' %}" alt="Foto Predeterminada" class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
+            {% endif %}
+            <p><strong>Nombre Completo:</strong> {{ candidato.user.first_name }} {{ candidato.user.last_name }}</p>
+            <p><strong>Teléfono:</strong> {{ candidato.telefono|default:"No disponible" }}</p>
+            <p><strong>Dirección:</strong> {{ candidato.direccion|default:"No disponible" }}</p>
+            <p><strong>LinkedIn:</strong> <a href="{{ candidato.linkedin }}" target="_blank">{{ candidato.linkedin }}</a></p>
+            <p><strong>Portafolio:</strong> <a href="{{ candidato.portafolio_url }}" target="_blank">{{ candidato.portafolio_url }}</a></p>
+            <p><strong>Experiencia Laboral:</strong></p>
+            <ul>
+                {% for experiencia in candidato.experiencia_laboral %}
+                    <li>{{ experiencia.empresa }} - {{ experiencia.tiempo }} meses</li>
+                {% endfor %}
+            </ul>
+            <p><strong>Nivel de Estudios:</strong> {{ candidato.get_nivel_estudios_display }}</p>
+            <p><strong>Instituciones Educativas:</strong></p>
+            <ul>
+                {% for institucion in candidato.instituciones_educativas %}
+                    <li>{{ institucion.nombre }} - {{ institucion.titulo }}</li>
+                {% endfor %}
+            </ul>
+            <p><strong>Cursos y Certificados:</strong></p>
+            <ul>
+                {% for curso in candidato.cursos_certificados %}
+                    <li>{{ curso }}</li>
+                {% endfor %}
+            </ul>
+            <p><strong>Descripción Personal:</strong> {{ candidato.descripcion_personal|default:"No disponible" }}</p>
+            <p><strong>Grado de Discapacidad:</strong> {{ candidato.get_grado_discapacidad_display }}</p>
+            <p><strong>Discapacidades:</strong> {{ candidato.discapacidades|default:"No especificadas" }}</p>
+            <p><strong>Habilidades Técnicas:</strong> {{ candidato.habilidades_tecnicas|join:", " }}</p>
+            <p><strong>Habilidades Blandas:</strong> {{ candidato.habilidades_blandas|join:", " }}</p>
+            <p><strong>Idiomas:</strong></p>
+            <ul>
+                {% for idioma, nivel in candidato.idiomas.items %}
+                    <li>{{ idioma }} - {{ nivel }}</li>
+                {% endfor %}
+            </ul>
+
+            <!-- Comentario de IA -->
+            <div class="card mt-4 border-warning">
+                <div class="card-header bg-warning text-dark d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Comentario de IA</strong>
+                </div>
+                <div class="card-body">
+                    <p>{{ comentario_ia }}</p>
+                </div>
+            </div>
+
+            {% if postulacion.estado == 'pendiente' %}
+            <div class="d-flex justify-content-center mt-4">
+                <button class="btn btn-success me-2" data-id="{{ postulacion.id }}" onclick="confirmarAccion('aceptada', this)"> 
+                    <i class="fas fa-check"></i> Aceptar 
+                </button>
+                <button class="btn btn-danger" data-id="{{ postulacion.id }}" onclick="confirmarAccion('rechazada', this)"> 
+                    <i class="fas fa-times"></i> Rechazar 
+                </button>
+            </div>  
+            {% endif %}        
+            
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmarAccion(estado, boton) {
+            const id = boton.getAttribute('data-id');
+            Swal.fire({
+                title: `¿Estás seguro de ${estado === 'aceptada' ? 'aceptar' : 'rechazar'} esta postulación?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, confirmar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/actualizar-postulacion/${id}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ estado: estado })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire('Actualizado', data.message, 'success').then(() => location.reload());
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'No se pudo actualizar la postulación.', 'error');
+                    });
+                }
+            });
+        }
+
+    </script>
+    
+</body>
+</html>

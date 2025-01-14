@@ -1,11 +1,13 @@
 import json
+import random
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import DetailView, ListView
-from .models import Empresa, Candidato, OfertaDeEmpleo, SolicitudDeEmpleo
+from django.views.decorators.csrf import csrf_exempt
+from .models import Empresa, Candidato, OfertaDeEmpleo, SolicitudDeEmpleo, CriterioInclusión
 from .forms import CandidatoForm, CompletarDatosCandidatoForm, EmpresaForm, OfertaDeEmpleoForm, PerfilBaseForm
 
 
@@ -230,6 +232,119 @@ class MisPostulacionesView(ListView):
 
     def get_queryset(self):
         return SolicitudDeEmpleo.objects.filter(candidato__user=self.request.user).order_by('-fecha_solicitud')
+
+@csrf_exempt
+@login_required
+def calificar_experiencia(request, solicitud_id):
+    if request.method == 'POST':
+        try:
+            solicitud = SolicitudDeEmpleo.objects.get(id=solicitud_id, candidato__user=request.user)
+            data = json.loads(request.body)
+            estrellas = int(data.get('estrellas'))
+            empresa = solicitud.oferta.empresa
+
+            # Obtener el total de calificaciones previas
+            total_calificaciones_previas = SolicitudDeEmpleo.objects.filter(oferta__empresa=empresa, calificada=True).count()
+
+            # Calcular la nueva puntuación promedio
+            nueva_puntuacion = (
+                (empresa.puntuacion_promedio * total_calificaciones_previas) + estrellas
+            ) / (total_calificaciones_previas + 1)
+
+            # Guardar la nueva puntuación redondeada
+            empresa.puntuacion_promedio = round(nueva_puntuacion, 2)
+            empresa.save()
+
+            # Marcar la solicitud como calificada
+            solicitud.calificada = True
+            solicitud.save()
+
+            return JsonResponse({'status': 'success', 'message': '¡Gracias por tu calificación!'})
+        except SolicitudDeEmpleo.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Solicitud no encontrada.'})
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})
+
+class GestionarOfertasView(ListView):
+    model = OfertaDeEmpleo
+    template_name = 'ofertas/gestionar_ofertas.html'
+
+    def get_queryset(self):
+        return OfertaDeEmpleo.objects.filter(empresa__user=self.request.user).order_by('-fecha_publicacion')
+    
+class EditarOfertaView(View):
+    def get(self, request, id):
+        oferta = get_object_or_404(OfertaDeEmpleo, id=id)
+        criterios = CriterioInclusión.objects.all()
+        form = OfertaDeEmpleoForm(instance=oferta)
+        return render(request, 'ofertas/editar_oferta.html', {
+            'form': form,
+            'oferta': oferta,
+            'criterios': criterios,
+            'estado_actual': oferta.estado  # Pasa el estado actual
+        })
+
+    def post(self, request, id):
+        oferta = get_object_or_404(OfertaDeEmpleo, id=id)
+        form = OfertaDeEmpleoForm(request.POST, instance=oferta)
+
+        if form.is_valid():
+            oferta.estado = request.POST.get('estado') 
+            requisitos = request.POST.getlist('requisito')
+            preguntas = request.POST.getlist('pregunta')
+            oferta.requisitos = requisitos
+            oferta.preguntas = preguntas
+            form.save()
+            return redirect('gestionar_ofertas')
+
+        return render(request, 'ofertas/editar_oferta.html', {
+            'form': form,
+            'oferta': oferta,
+            'criterios': CriterioInclusión.objects.all(),
+            'estado_actual': oferta.estado
+        })
+
+class VerPostulacionesView(View):
+    def get(self, request, oferta_id):
+        oferta = get_object_or_404(OfertaDeEmpleo, id=oferta_id)
+        postulaciones = SolicitudDeEmpleo.objects.filter(oferta=oferta)
+        return render(request, 'ofertas/ver_postulaciones.html', {'postulaciones': postulaciones, 'oferta': oferta})
+    
+class VerPerfilCandidatoView(View):
+    def get(self, request, candidato_id, postulacion_id):
+        candidato = get_object_or_404(Candidato, id=candidato_id)
+        postulacion = get_object_or_404(SolicitudDeEmpleo, id=postulacion_id)
+
+        comentarios_ia = [
+            "Este candidato tiene habilidades destacadas en gestión de proyectos.",
+            "La experiencia de este candidato es ideal para roles de liderazgo.",
+            "Su perfil técnico es muy fuerte en áreas clave como programación y diseño.",
+        ]
+        comentario_ia = random.choice(comentarios_ia)
+
+        return render(request, 'perfil/ver_perfil_candidato.html', {
+            'candidato': candidato,
+            'comentario_ia': comentario_ia,
+            'postulacion': postulacion
+        })
+    
+@csrf_exempt
+def actualizar_postulacion(request, id):
+    if request.method == 'POST':
+        postulacion = get_object_or_404(SolicitudDeEmpleo, id=id)
+        data = json.loads(request.body)
+        estado = data.get('estado')
+
+        if estado in ['aceptada', 'rechazada']:
+            postulacion.estado = estado
+            postulacion.save()
+            return JsonResponse({'status': 'success', 'message': f'La postulación ha sido {estado}.'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Estado inválido.'})
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido.'})
+    
+
+
 
 
 

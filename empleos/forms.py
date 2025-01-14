@@ -31,7 +31,7 @@ class EmpresaForm(forms.ModelForm):
 class CandidatoForm(forms.ModelForm):
     class Meta:
         model = Candidato
-        fields = ["portafolio_url", "nivel_estudios", "habilidades_tecnicas", "habilidades_blandas", "idiomas", "experiencia_laboral", "cursos_certificados", "grado_discapacidad", "discapacidades"]
+        fields = ["portafolio_url", "nivel_estudios", "habilidades_tecnicas", "habilidades_blandas", "idiomas", "experiencia_laboral", "cursos_certificados", "grado_discapacidad", "discapacidades", "documentos_adjuntos"]
 
 class OfertaDeEmpleoForm(forms.ModelForm):
     criterios_inclusion = forms.ModelMultipleChoiceField(

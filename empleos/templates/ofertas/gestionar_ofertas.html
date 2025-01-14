@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Gestionar Ofertas</title>
+    <style>
+        .table-container { margin-top: 30px; }
+        .table { width: 100%; background-color: white; border-radius: 12px; }
+        .table th, .table td { text-align: center; padding: 10px; }
+        .search-bar { margin-bottom: 20px; }
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar .dropdown-menu {
+            background-color: #333;
+        }
+        .navbar .dropdown-item {
+            color: white;
+        }
+    </style>
+</head>
+<body style="background: #ddd;">
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'ver_perfil_empresa' %}" class="text-white me-3" title="Inicio">
+                <i class="fas fa-home fa-lg"></i>
+            </a>
+            <img src="{% static 'images/image.png' %}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <span class="text-white" style="font-size: 16px;">Hola, {{ user.username }}</span>
+        </div>
+        <div>
+            <div class="dropdown">
+                <button
+                    class="btn btn-dark dropdown-toggle"
+                    type="button"
+                    id="userMenu"
+                    data-mdb-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    Opciones
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userMenu">
+                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container table-container mt-5">
+        <div class="search-bar">
+            <input type="text" class="form-control" id="searchInput" placeholder="Buscar ofertas...">
+        </div>
+        <table class="table table-hover bg-white rounded-3">
+            <thead>
+                <tr>
+                    <th>Fecha de Publicación</th>
+                    <th>Título de la Oferta</th>
+                    <th>Estado</th>
+                    <th>Postulaciones</th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody id="ofertasTable">
+                {% for oferta in object_list %}
+                    <tr>
+                        <td>{{ oferta.fecha_publicacion|date:"d/m/Y" }}</td>
+                        <td>{{ oferta.titulo }}</td>
+                        <td>{{ oferta.estado|title }}</td>
+                        <td>
+                            <a href="{% url 'ver_postulaciones' oferta.id %}">
+                                <span class="badge bg-primary rounded-pill">{{ oferta.solicitudes.count }}</span>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'editar_oferta' oferta.id %}" class="text-dark">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">No has publicado ninguna oferta.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        // Búsqueda en la tabla
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#ofertasTable tr');
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+                for (let i = 0; i < cells.length; i++) {
+                    if (cells[i].textContent.toLowerCase().includes(filter)) {
+                        match = true;
+                        break;
+                    }
+                }
+                row.style.display = match ? '' : 'none';
+            });
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+
+</body>
+
+</html>

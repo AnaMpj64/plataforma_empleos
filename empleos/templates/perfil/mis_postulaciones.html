@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Mis Postulaciones</title>
     <style>
         body { background: #ddd; }
@@ -20,6 +21,24 @@
         .badge-rechazada { background-color: #dc3545; color: white; }
         .badge-pendiente { background-color: #b7b429; color: white; }
         .search-bar { margin-bottom: 20px; }
+        #stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            font-size: 30px;
+        }
+
+        #stars-container .star {
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.3s;
+        }
+
+        #stars-container .star:hover,
+        #stars-container .star.selected {
+            color: #ffc107;
+        }
+
     </style>
 </head>
 <body>
@@ -49,6 +68,7 @@
         <div class="search-bar">
             <input type="text" class="form-control" id="searchInput" placeholder="Buscar en las postulaciones...">
         </div>
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -69,8 +89,14 @@
                                 <span class="badge badge-pendiente">Pendiente</span>
                             {% elif solicitud.estado == 'aceptada' %}
                                 <span class="badge badge-aceptada">Aceptada</span>
+                                {% if not solicitud.calificada %}
+                                    <a href="#" class="text-primary rate-experience" data-id="{{ solicitud.id }}">Califica tu experiencia</a>
+                                {% endif %}
                             {% else %}
                                 <span class="badge badge-rechazada">Rechazada</span>
+                                {% if not solicitud.calificada %}
+                                    <a href="#" class="text-primary rate-experience" data-id="{{ solicitud.id }}">Califica tu experiencia</a>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>
@@ -100,6 +126,84 @@
                 row.style.display = match ? '' : 'none';
             });
         });
+
+        document.querySelectorAll('.rate-experience').forEach(button => {
+    button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const solicitudId = this.dataset.id;
+
+        Swal.fire({
+            title: 'Tu opinión es importante',
+            text: 'Por favor, selecciona la cantidad de estrellas para calificar esta oferta de empleo.',
+            html: `
+                <form id="ratingForm">
+                    <span>Califica tu experiencia de postulación con esta empresa</span>                
+                    <div id="stars-container">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
+                </form>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Enviar calificación',
+            preConfirm: () => {
+                const estrellas = document.querySelector('#stars-container .selected')?.dataset.value;
+                if (!estrellas) {
+                    Swal.showValidationMessage('Por favor selecciona una calificación.');
+                }
+                return estrellas;
+            }
+        }).then(result => {
+            if (result.isConfirmed) {
+                const estrellas = result.value;
+
+                // Enviar la calificación al servidor
+                fetch(`/calificar-experiencia/${solicitudId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ estrellas: estrellas })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire('¡Gracias!', 'Tu calificación ha sido enviada exitosamente.', 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Ocurrió un error inesperado.', 'error');
+                });
+            }
+        });
+
+        // Manejar la selección de estrellas
+        document.querySelectorAll('#stars-container .star').forEach(star => {
+            star.addEventListener('click', function () {
+                const value = this.dataset.value;
+
+                document.querySelectorAll('#stars-container .star').forEach(s => {
+                    s.classList.remove('selected');
+                });
+
+                for (let i = 0; i < value; i++) {
+                    document.querySelectorAll('#stars-container .star')[i].classList.add('selected');
+                }
+            });
+        });
+    });
+});
+
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>

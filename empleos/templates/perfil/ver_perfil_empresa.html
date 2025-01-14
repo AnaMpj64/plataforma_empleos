@@ -8,8 +8,52 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <title>Perfil de {{ perfil.nombre_empresa }}</title>
+    <style>
+        body {
+            background: #ddd; 
+        }
+
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar .dropdown-menu {
+            background-color: #333;
+        }
+        .navbar .dropdown-item {
+            color: white;
+        }
+    </style>
 </head>
-<body class="gradient-custom">
+<body>
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <img src="{% static 'images/image.png' %}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <span class="text-white" style="font-size: 16px;">Hola, {{ user.username }}</span>
+        </div>
+        <div>
+            <div class="dropdown">
+                <button
+                    class="btn btn-dark dropdown-toggle"
+                    type="button"
+                    id="userMenu"
+                    data-mdb-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    Opciones
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userMenu">
+                    <li><a class="dropdown-item" href="{% url 'account_logout' %}">Cerrar sesión</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <section class="vh-100">
         <div class="container py-5 h-100">
             <div class="row justify-content-center align-items-center h-100">
@@ -69,7 +113,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="panel-interactivo">
+                            <div class="panel-interactivo" id="gestionar-ofertas" data-url="{% url 'gestionar_ofertas' %}">
                                 <div class="icono-grande">
                                     <i class="fas fa-tasks"></i>
                                 </div>
@@ -81,7 +125,14 @@
             </div>
         </div>
     </section>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('gestionar-ofertas').addEventListener('click', function () {
+                const url = this.getAttribute('data-url');
+                window.location.href = url;
+            });
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
     <script src="{% static 'js/script.js' %}"></script>
 </body>
