@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerrar sesión</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .logout-card {
+            margin-top: 30px;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 5px solid;
+            text-align: center;
+            max-width: 400px;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7, #ffefa0);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .logout-card h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .logout-card p {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .logout-card button {
+            background: linear-gradient(45deg, #6a11cb, #2575fc, #ff00b7);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .logout-card button:hover {
+            background-color: #c82333;
+        }
+        .logout-card a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .logout-card a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logout-card">
+        <h1><i class="fas fa-sign-out-alt"></i> Cerrar sesión</h1>
+        <p>¿Seguro que deseas cerrar sesión?</p>
+        <form method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button type="submit"><i class="fas fa-power-off"></i> Cerrar sesión</button>
+        </form>
+        <p class="mt-3">
+            <a href="{% url 'account_login' %}">Volver al inicio</a>
+        </p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+</body>
+</html>

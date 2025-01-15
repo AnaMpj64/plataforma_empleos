@@ -1,5 +1,6 @@
 import json
 import random
+import requests
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
@@ -206,25 +207,76 @@ class OfertaDetalleView(DetailView):
     def get_object(self):
         id_ = self.kwargs.get("id")
         return OfertaDeEmpleo.objects.get(id=id_)
-    
+
+import json
+import requests
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Candidato, OfertaDeEmpleo, SolicitudDeEmpleo
+
 @login_required
 def enviar_solicitud(request):
     if request.method == "POST":
-        candidato = Candidato.objects.get(user=request.user)
+        candidato = get_object_or_404(Candidato, user=request.user)
         oferta_id = request.POST.get("oferta_id")
         respuestas = json.loads(request.POST.get("respuestas", "{}"))
 
         try:
-            oferta = OfertaDeEmpleo.objects.get(id=oferta_id)
+            oferta = get_object_or_404(OfertaDeEmpleo, id=oferta_id)
+
+            # Construir el texto de la oferta de empleo
+            requisitos = oferta.requisitos if isinstance(oferta.requisitos, list) else []
+            preguntas = oferta.preguntas if isinstance(oferta.preguntas, list) else []
+
+            job_offer_text = f"""
+            Título: {oferta.titulo}
+            Descripción: {oferta.descripcion}
+            Requisitos: {', '.join(requisitos)}
+            Preguntas: {', '.join(preguntas)}
+            Criterios de Inclusión: {', '.join([criterio.nombre for criterio in oferta.criterios_inclusion.all()])}
+            """
+
+            # Construir el texto del candidato
+            candidate_text = f"""
+            Nivel de Estudios: {candidato.get_nivel_estudios_display()}
+            Habilidades Técnicas: {', '.join(candidato.habilidades_tecnicas or [])}
+            Habilidades Blandas: {', '.join(candidato.habilidades_blandas or [])}
+            Idiomas: {', '.join([f"{idioma}: {nivel}" for idioma, nivel in (candidato.idiomas or {}).items()])}
+            Experiencia Laboral: {', '.join([f"{exp['empresa']} - {exp['tiempo']} meses" for exp in (candidato.experiencia_laboral or [])])}
+            Cursos Certificados: {', '.join(candidato.cursos_certificados or [])}
+            Grado de Discapacidad: {candidato.get_grado_discapacidad_display()}
+            Discapacidades: {candidato.discapacidades or 'No especificadas'}
+            Descripción Personal: {candidato.descripcion_personal or 'No disponible'}
+            Instituciones Educativas: {', '.join([f"{inst['nombre']} - {inst['titulo']}" for inst in (candidato.instituciones_educativas or [])])}
+            Respuestas: {', '.join([f"{key}: {value}" for key, value in respuestas.items()])}
+            """
+
+            # Crear el cuerpo de la solicitud
+            data = {
+                "job_offer": job_offer_text.strip(),
+                "candidate": candidate_text.strip(),
+            }
+
+            # Hacer la solicitud POST a la API
+            response = requests.post("https://1kksqu.buildship.run/analisisperfilia", json=data)
+
+            # Guardar el análisis en el modelo, manejando texto plano
             solicitud = SolicitudDeEmpleo.objects.create(
                 candidato=candidato,
                 oferta=oferta,
-                respuestas=respuestas
+                respuestas=respuestas,
+                analisis_de_ia=response.text  # Aquí guardamos el texto plano devuelto por la API
             )
+
             return JsonResponse({"status": "success", "message": "Solicitud enviada correctamente"})
+
         except OfertaDeEmpleo.DoesNotExist:
             return JsonResponse({"status": "error", "message": "La oferta no existe"})
+
     return JsonResponse({"status": "error", "message": "Método no permitido"})
+
+
 
 class MisPostulacionesView(ListView):
     model = SolicitudDeEmpleo

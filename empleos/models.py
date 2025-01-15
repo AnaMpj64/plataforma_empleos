@@ -166,6 +166,7 @@ class SolicitudDeEmpleo(models.Model):
     fecha_solicitud = models.DateTimeField(auto_now_add=True, help_text="Fecha de la solicitud")
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente', help_text="Estado de la solicitud")
     calificada = models.BooleanField(default=False, help_text="Indica si la experiencia ya fue calificada")
+    analisis_de_ia = models.TextField(blank=True, null=True, help_text="Análisis generado por IA")
 
     def __str__(self):
         return f"Solicitud de {self.candidato.user.username} para {self.oferta.titulo} - Estado: {self.estado}"
